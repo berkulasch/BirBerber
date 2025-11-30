@@ -18,7 +18,19 @@ export interface Barber {
     [date: string]: string[]; // date (YYYY-MM-DD) -> array of times
   };
   location: string;
+  contactNumber?: string;
+  workingHours?: string; // e.g. "09:00 - 18:00"
   services: string[]; // IDs of services offered
+}
+
+export interface Appointment {
+  id: string;
+  barberId: string;
+  userId: string;
+  serviceId: string;
+  date: string;
+  time: string;
+  status: 'confirmed' | 'cancelled';
 }
 
 export const MOCK_USERS: User[] = [
@@ -63,6 +75,8 @@ export const MOCK_BARBERS: Barber[] = [
     rating: 4.9,
     imageUrl: 'https://ui-avatars.com/api/?name=Mustafa+Master&background=C5A059&color=fff',
     location: 'Downtown Istanbul',
+    contactNumber: '+90 555 111 2233',
+    workingHours: '09:00 - 19:00',
     availableSlots: {
       '2025-11-12': ['10:00', '11:00', '14:00', '16:00'],
       '2025-11-13': ['09:00', '12:00', '15:00'],
@@ -76,6 +90,8 @@ export const MOCK_BARBERS: Barber[] = [
     rating: 4.7,
     imageUrl: 'https://ui-avatars.com/api/?name=Elegant+Cuts&background=1E1E1E&color=fff',
     location: 'Besiktas',
+    contactNumber: '+90 555 444 5566',
+    workingHours: '10:00 - 20:00',
     availableSlots: {
       '2025-11-12': ['13:00', '14:30', '16:00'],
       '2025-11-13': ['10:00', '11:00', '14:00'],
@@ -89,10 +105,24 @@ export const MOCK_BARBERS: Barber[] = [
     rating: 4.8,
     imageUrl: 'https://ui-avatars.com/api/?name=Golden+Scissors&background=C5A059&color=fff',
     location: 'Kadikoy',
+    contactNumber: '+90 555 777 8899',
+    workingHours: '09:00 - 18:00',
     availableSlots: {
       '2025-11-12': ['09:00', '10:00', '11:00', '12:00'],
       '2025-11-14': ['14:00', '15:00', '16:00'],
     },
     services: ['2', '3', '4'],
   },
+];
+
+export const MOCK_APPOINTMENTS: Appointment[] = [
+  {
+    id: 'a1',
+    barberId: '1',
+    userId: 'u1',
+    serviceId: '1',
+    date: '2025-11-12',
+    time: '10:00',
+    status: 'confirmed'
+  }
 ];

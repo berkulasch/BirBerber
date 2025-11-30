@@ -74,6 +74,25 @@ export const AppointmentScreen = () => {
       </View>
 
       <ScrollView style={styles.content}>
+        <View style={styles.shopInfoContainer}>
+           <View style={styles.infoRow}>
+             <MaterialIcons name="location-on" size={16} color={theme.colors.textSecondary} />
+             <Text style={styles.infoText}>{barber.location}</Text>
+           </View>
+           {barber.workingHours && (
+             <View style={styles.infoRow}>
+               <MaterialIcons name="access-time" size={16} color={theme.colors.textSecondary} />
+               <Text style={styles.infoText}>{barber.workingHours}</Text>
+             </View>
+           )}
+           {barber.contactNumber && (
+             <View style={styles.infoRow}>
+               <MaterialIcons name="phone" size={16} color={theme.colors.textSecondary} />
+               <Text style={styles.infoText}>{barber.contactNumber}</Text>
+             </View>
+           )}
+        </View>
+
         <Text style={styles.sectionTitle}>Select Service</Text>
         <View style={styles.servicesContainer}>
           {barber?.services.map((serviceId) => {
@@ -176,6 +195,23 @@ const styles = StyleSheet.create({
     ...theme.typography.subheader,
     fontSize: 20,
     color: theme.colors.primary,
+  } as TextStyle,
+  shopInfoContainer: {
+    padding: theme.spacing.m,
+    backgroundColor: theme.colors.surface,
+    borderBottomWidth: 1,
+    borderBottomColor: theme.colors.border,
+  } as ViewStyle,
+  infoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 4,
+  } as ViewStyle,
+  infoText: {
+    ...theme.typography.body,
+    fontSize: 14,
+    color: theme.colors.textSecondary,
+    marginLeft: 8,
   } as TextStyle,
   content: {
     flex: 1,

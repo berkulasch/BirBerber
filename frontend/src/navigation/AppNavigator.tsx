@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { HomeScreen } from '../screens/HomeScreen';
 import { ShopListScreen } from '../screens/ShopListScreen';
 import { AppointmentScreen } from '../screens/AppointmentScreen';
+import { AdminScreen } from '../screens/AdminScreen';
 import { RootStackParamList } from '../types/navigation';
 import { theme } from '../theme';
 import { StatusBar } from 'expo-status-bar';
@@ -24,6 +25,7 @@ export const AppNavigator = () => {
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="ShopList" component={ShopListScreen} />
         <Stack.Screen name="Appointment" component={AppointmentScreen} />
+        <Stack.Screen name="Admin" component={AdminScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

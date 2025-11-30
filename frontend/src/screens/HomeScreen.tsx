@@ -14,6 +14,9 @@ export const HomeScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.navigate('Admin')} style={styles.adminButton}>
+          <MaterialIcons name="admin-panel-settings" size={24} color={theme.colors.textSecondary} />
+        </TouchableOpacity>
         <Text style={styles.brandName}>BIRBERBER</Text>
         <Text style={styles.subtitle}>Est. 2024</Text>
       </View>
@@ -55,6 +58,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: theme.spacing.xl,
     marginBottom: theme.spacing.xl,
+    position: 'relative',
+  } as ViewStyle,
+  adminButton: {
+    position: 'absolute',
+    right: theme.spacing.l,
+    top: 0,
   } as ViewStyle,
   brandName: {
     ...theme.typography.header,
