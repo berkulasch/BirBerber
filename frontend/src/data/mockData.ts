@@ -1,4 +1,5 @@
 import { Theme } from '../theme';
+import { User } from '../types/user';
 
 export interface Service {
   id: string;
@@ -19,6 +20,32 @@ export interface Barber {
   location: string;
   services: string[]; // IDs of services offered
 }
+
+export const MOCK_USERS: User[] = [
+  {
+    id: 'u1',
+    name: 'John Doe',
+    email: 'john@example.com',
+    role: 'customer',
+    phoneNumber: '+1234567890',
+    avatarUrl: 'https://ui-avatars.com/api/?name=John+Doe&background=random',
+  },
+  {
+    id: 'u2',
+    name: 'Mustafa the Master',
+    email: 'mustafa@barber.com',
+    role: 'barber',
+    phoneNumber: '+1987654321',
+    avatarUrl: 'https://ui-avatars.com/api/?name=Mustafa+Master&background=C5A059&color=fff',
+  },
+  {
+    id: 'u3',
+    name: 'Admin User',
+    email: 'admin@birberber.com',
+    role: 'admin',
+    avatarUrl: 'https://ui-avatars.com/api/?name=Admin+User&background=000&color=fff',
+  },
+];
 
 export const MOCK_SERVICES: Service[] = [
   { id: '1', name: 'Haircut', price: 250, duration: 30 },
