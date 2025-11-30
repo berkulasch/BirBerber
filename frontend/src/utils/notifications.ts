@@ -8,6 +8,8 @@ Notifications.setNotificationHandler({
     shouldShowAlert: true,
     shouldPlaySound: true,
     shouldSetBadge: false,
+    shouldShowBanner: true,
+    shouldShowList: true,
   }),
 });
 
@@ -61,7 +63,11 @@ export async function scheduleBookingNotification(barberName: string, date: stri
       title: "Upcoming Appointment Reminder",
       body: `You have an appointment with ${barberName} in 1 hour.`,
     },
-    trigger: { seconds: 5 }, // Demo: trigger reminder 5 seconds later
+    trigger: { 
+      type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+      seconds: 5,
+      repeats: false,
+    }, // Demo: trigger reminder 5 seconds later
   });
 }
 
