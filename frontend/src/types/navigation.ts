@@ -4,5 +4,6 @@ export type RootStackParamList = {
   ShopList: undefined;
   Appointment: { barberId: string };
   Admin: undefined;
+  Profile: undefined;
 };
 
