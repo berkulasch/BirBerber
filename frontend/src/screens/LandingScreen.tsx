@@ -6,13 +6,15 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { RootStackParamList } from '../types/navigation';
 import { theme } from '../theme';
 import { MOCK_USERS } from '../data/mockData';
+import { useUser } from '../context/UserContext';
 
 type LandingScreenNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
-type AuthMode = 'login' | 'register' | 'admin';
+type AuthMode = 'login' | 'register' | 'owner' | 'register_barber';
 
 export const LandingScreen = () => {
   const navigation = useNavigation<LandingScreenNavigationProp>();
+  const { setUser } = useUser();
   const [mode, setMode] = useState<AuthMode>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -20,11 +22,11 @@ export const LandingScreen = () => {
 
   const handleAuth = () => {
     // Mock Authentication Logic
-    if (mode === 'admin') {
-        if (email === 'admin@birberber.com' && password === 'admin123') {
-            navigation.replace('Admin'); // Go directly to Admin panel
+    if (mode === 'owner') {
+        if (email === 'owner@birberber.com' && password === 'owner123') {
+            navigation.replace('Admin'); // Go directly to Admin panel (Owner dashboard)
         } else {
-            alert('Invalid Admin Credentials. Try admin@birberber.com / admin123');
+            alert('Invalid Owner Credentials. Try owner@birberber.com / owner123');
         }
         return;
     }
@@ -33,25 +35,65 @@ export const LandingScreen = () => {
         // Simulate finding user
         const user = MOCK_USERS.find(u => u.email === email);
         if (user) {
-             // In a real app, we'd store the token/user info here
-             if (user.role === 'admin') {
+             setUser(user);
+             if (user.role === 'owner') {
                  navigation.replace('Admin');
              } else {
                  navigation.replace('Home');
              }
         } else {
-             // Allow generic login for demo if not found in mock data, assuming customer
+             // Allow generic login for demo if not found in mock data, assuming user
+             setUser({ 
+                id: 'guest', 
+                name: 'Guest User', 
+                email: email || 'guest@example.com', 
+                role: 'user' 
+             });
              navigation.replace('Home');
         }
+    } else if (mode === 'register_barber') {
+         // Register barber flow
+         setUser({ 
+             id: 'new-barber', 
+             name: name || 'New Barber', 
+             email: email, 
+             role: 'barber' 
+         });
+         navigation.replace('Home');
     } else {
         // Register flow - assume success and go to Home
+        setUser({ 
+            id: 'new', 
+            name: name || 'New User', 
+            email: email, 
+            role: 'user' 
+        });
         navigation.replace('Home');
     }
   };
 
   const toggleMode = () => {
+      // Unused now with explicit setters
       if (mode === 'login') setMode('register');
       else setMode('login');
+  };
+
+  const getTitle = () => {
+      switch(mode) {
+          case 'login': return 'Welcome Back';
+          case 'register': return 'Create Account';
+          case 'owner': return 'Owner Portal';
+          case 'register_barber': return 'Barber Registration';
+      }
+  };
+
+  const getButtonText = () => {
+      switch(mode) {
+          case 'login': return 'LOGIN';
+          case 'register': return 'REGISTER';
+          case 'owner': return 'OWNER LOGIN';
+          case 'register_barber': return 'REGISTER AS BARBER';
+      }
   };
 
   return (
@@ -66,11 +108,9 @@ export const LandingScreen = () => {
         </View>
 
         <View style={styles.formContainer}>
-          <Text style={styles.title}>
-            {mode === 'login' ? 'Welcome Back' : mode === 'register' ? 'Create Account' : 'Admin Portal'}
-          </Text>
+          <Text style={styles.title}>{getTitle()}</Text>
 
-          {mode === 'register' && (
+          {(mode === 'register' || mode === 'register_barber') && (
             <TextInput
               style={styles.input}
               placeholder="Full Name"
@@ -100,26 +140,42 @@ export const LandingScreen = () => {
           />
 
           <TouchableOpacity style={styles.button} onPress={handleAuth}>
-            <Text style={styles.buttonText}>
-              {mode === 'login' ? 'LOGIN' : mode === 'register' ? 'REGISTER' : 'ADMIN LOGIN'}
-            </Text>
+            <Text style={styles.buttonText}>{getButtonText()}</Text>
           </TouchableOpacity>
 
-          {mode !== 'admin' && (
-            <TouchableOpacity onPress={toggleMode} style={styles.switchButton}>
-              <Text style={styles.switchText}>
-                {mode === 'login' ? "Don't have an account? Register" : "Already have an account? Login"}
-              </Text>
+          {mode === 'login' && (
+            <TouchableOpacity onPress={() => setMode('register')} style={styles.switchButton}>
+              <Text style={styles.switchText}>Don't have an account? Register</Text>
             </TouchableOpacity>
           )}
 
-          {mode !== 'admin' ? (
-             <TouchableOpacity onPress={() => setMode('admin')} style={styles.adminLink}>
-               <Text style={styles.adminLinkText}>Login as Shop Owner / Admin</Text>
+          {mode === 'register' && (
+            <>
+                <TouchableOpacity onPress={() => setMode('login')} style={styles.switchButton}>
+                <Text style={styles.switchText}>Already have an account? Login</Text>
+                </TouchableOpacity>
+                
+                <TouchableOpacity onPress={() => setMode('register_barber')} style={styles.subLink}>
+                    <Text style={styles.subLinkText}>Work here? Register as Barber</Text>
+                </TouchableOpacity>
+            </>
+          )}
+
+          {mode === 'register_barber' && (
+             <TouchableOpacity onPress={() => setMode('login')} style={styles.switchButton}>
+               <Text style={styles.switchText}>Back to Login</Text>
              </TouchableOpacity>
-          ) : (
+          )}
+
+          {mode === 'owner' && (
              <TouchableOpacity onPress={() => setMode('login')} style={styles.adminLink}>
                <Text style={styles.adminLinkText}>Back to User Login</Text>
+             </TouchableOpacity>
+          )}
+
+          {mode !== 'owner' && mode !== 'register_barber' && (
+             <TouchableOpacity onPress={() => setMode('owner')} style={styles.adminLink}>
+               <Text style={styles.adminLinkText}>Login as Shop Owner</Text>
              </TouchableOpacity>
           )}
         </View>
@@ -194,6 +250,15 @@ const styles = StyleSheet.create({
     ...theme.typography.body,
     color: theme.colors.textSecondary,
   } as TextStyle,
+  subLink: {
+    marginTop: theme.spacing.m,
+    alignItems: 'center',
+  },
+  subLinkText: {
+    ...theme.typography.body,
+    color: theme.colors.primary,
+    fontSize: 14,
+  },
   adminLink: {
     marginTop: theme.spacing.xl,
     alignItems: 'center',
@@ -205,3 +270,5 @@ const styles = StyleSheet.create({
     fontSize: 12,
   } as TextStyle,
 });
+
+

@@ -7,6 +7,7 @@ import { theme } from '../theme';
 import { MaterialIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MOCK_BARBERS, Barber } from '../data/mockData';
+import { BottomNav } from '../components/BottomNav';
 
 type ShopListScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'ShopList'>;
 
@@ -88,6 +89,7 @@ export const ShopListScreen = () => {
           </View>
         }
       />
+      <BottomNav activeRoute="ShopList" />
     </SafeAreaView>
   );
 };

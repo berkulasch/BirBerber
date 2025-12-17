@@ -33,8 +33,8 @@ export const AppointmentScreen = () => {
     
     const service = MOCK_SERVICES.find(s => s.id === selectedService);
     Alert.alert(
-      'Appointment Confirmed',
-      `Booked with ${barber.name}\nService: ${service?.name}\nDate: ${selectedDate}\nTime: ${selectedTime}\n\nYou will receive a notification shortly.`,
+      'Request Sent',
+      `Your request has been sent to ${barber.name}.\nService: ${service?.name}\nDate: ${selectedDate}\nTime: ${selectedTime}\n\nYou will be notified when the barber accepts your request.`,
       [{ text: 'OK', onPress: () => navigation.goBack() }]
     );
   };
@@ -163,7 +163,7 @@ export const AppointmentScreen = () => {
           disabled={!selectedDate || !selectedTime || !selectedService}
           onPress={handleBook}
         >
-          <Text style={styles.confirmButtonText}>CONFIRM APPOINTMENT</Text>
+          <Text style={styles.confirmButtonText}>REQUEST APPOINTMENT</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

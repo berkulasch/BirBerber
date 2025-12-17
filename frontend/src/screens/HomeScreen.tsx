@@ -6,11 +6,51 @@ import { RootStackParamList } from '../types/navigation';
 import { theme } from '../theme';
 import { MaterialIcons } from '@expo/vector-icons';
 import { BottomNav } from '../components/BottomNav';
+import { useUser } from '../context/UserContext';
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
 
 export const HomeScreen = () => {
   const navigation = useNavigation<HomeScreenNavigationProp>();
+  const { role, user } = useUser();
+
+  if (role === 'barber') {
+      return (
+        <SafeAreaView style={styles.container}>
+          <View style={styles.header}>
+            <View style={styles.logoContainer}>
+                <Text style={styles.brandName}>BIRBERBER</Text>
+                <Text style={styles.subtitle}>BARBER PORTAL</Text>
+            </View>
+          </View>
+    
+          <View style={styles.content}>
+            <View style={styles.heroSection}>
+                <Text style={styles.heroTitle}>Welcome, {user?.name}</Text>
+                <Text style={styles.heroSubtitle}>Manage your day efficiently.</Text>
+                
+                <TouchableOpacity 
+                  style={styles.bookButton}
+                  onPress={() => navigation.navigate('Schedule')}
+                >
+                  <Text style={styles.bookButtonText}>MY SCHEDULE</Text>
+                  <MaterialIcons name="calendar-today" size={20} color={theme.colors.background} />
+                </TouchableOpacity>
+
+                <TouchableOpacity 
+                  style={[styles.bookButton, styles.secondaryButton]}
+                  onPress={() => navigation.navigate('Requests')}
+                >
+                  <Text style={[styles.bookButtonText, styles.secondaryButtonText]}>VIEW REQUESTS</Text>
+                  <MaterialIcons name="notifications" size={20} color={theme.colors.primary} />
+                </TouchableOpacity>
+            </View>
+          </View>
+    
+          <BottomNav activeRoute="Home" />
+        </SafeAreaView>
+      );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -132,6 +172,15 @@ const styles = StyleSheet.create({
     color: theme.colors.background,
     fontSize: 16,
     letterSpacing: 1,
+  } as TextStyle,
+  secondaryButton: {
+    marginTop: theme.spacing.m,
+    backgroundColor: theme.colors.surface,
+    borderWidth: 1,
+    borderColor: theme.colors.primary,
+  } as ViewStyle,
+  secondaryButtonText: {
+    color: theme.colors.primary,
   } as TextStyle,
   featuresRow: {
     flexDirection: 'row',

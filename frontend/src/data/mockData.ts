@@ -30,7 +30,7 @@ export interface Appointment {
   serviceId: string;
   date: string;
   time: string;
-  status: 'confirmed' | 'cancelled';
+  status: 'confirmed' | 'cancelled' | 'pending';
 }
 
 export const MOCK_USERS: User[] = [
@@ -38,7 +38,8 @@ export const MOCK_USERS: User[] = [
     id: 'u1',
     name: 'John Doe',
     email: 'john@example.com',
-    role: 'customer',
+    role: 'user',
+    gender: 'male',
     phoneNumber: '+1234567890',
     avatarUrl: 'https://ui-avatars.com/api/?name=John+Doe&background=random',
   },
@@ -47,16 +48,27 @@ export const MOCK_USERS: User[] = [
     name: 'Mustafa the Master',
     email: 'mustafa@barber.com',
     role: 'barber',
+    gender: 'male',
     phoneNumber: '+1987654321',
     avatarUrl: 'https://ui-avatars.com/api/?name=Mustafa+Master&background=C5A059&color=fff',
   },
   {
     id: 'u3',
-    name: 'Admin User',
-    email: 'admin@birberber.com',
-    role: 'admin',
-    avatarUrl: 'https://ui-avatars.com/api/?name=Admin+User&background=000&color=fff',
+    name: 'Shop Owner',
+    email: 'owner@birberber.com',
+    role: 'owner',
+    gender: 'male',
+    avatarUrl: 'https://ui-avatars.com/api/?name=Shop+Owner&background=000&color=fff',
   },
+  {
+    id: 'u4',
+    name: 'Jane Smith',
+    email: 'jane@example.com',
+    role: 'user',
+    gender: 'female',
+    phoneNumber: '+9876543210',
+    avatarUrl: 'https://ui-avatars.com/api/?name=Jane+Smith&background=random',
+  }
 ];
 
 export const MOCK_SERVICES: Service[] = [
@@ -65,6 +77,8 @@ export const MOCK_SERVICES: Service[] = [
   { id: '3', name: 'Hot Towel Shave', price: 200, duration: 30 },
   { id: '4', name: 'Hair + Beard Combo', price: 350, duration: 50 },
   { id: '5', name: 'Full Service Package', price: 500, duration: 75 },
+  { id: '6', name: 'Ladies Cut', price: 400, duration: 60 },
+  { id: '7', name: 'Coloring', price: 800, duration: 120 },
 ];
 
 export const MOCK_BARBERS: Barber[] = [
@@ -96,7 +110,7 @@ export const MOCK_BARBERS: Barber[] = [
       '2025-11-12': ['13:00', '14:30', '16:00'],
       '2025-11-13': ['10:00', '11:00', '14:00'],
     },
-    services: ['1', '2', '4'],
+    services: ['1', '2', '4', '6', '7'],
   },
   {
     id: '3',
