@@ -286,3 +286,5 @@ const styles = StyleSheet.create({
       color: theme.colors.background,
   } as TextStyle,
 });
+
+

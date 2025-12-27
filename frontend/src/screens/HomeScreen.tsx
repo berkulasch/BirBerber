@@ -59,9 +59,11 @@ export const HomeScreen = () => {
             <Text style={styles.brandName}>BIRBERBER</Text>
             <Text style={styles.subtitle}>PREMIUM GROOMING</Text>
         </View>
-        <TouchableOpacity onPress={() => navigation.navigate('Admin')} style={styles.adminButton}>
-          <MaterialIcons name="admin-panel-settings" size={24} color={theme.colors.textSecondary} />
-        </TouchableOpacity>
+        {role === 'owner' && (
+          <TouchableOpacity onPress={() => navigation.navigate('Admin')} style={styles.adminButton}>
+            <MaterialIcons name="admin-panel-settings" size={24} color={theme.colors.textSecondary} />
+          </TouchableOpacity>
+        )}
       </View>
 
       <View style={styles.content}>

@@ -1,0 +1,30 @@
+# General
+.DS_Store
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Env / secrets
+.env
+.env.*
+
+# Dependencies
+node_modules/
+
+# Builds
+dist/
+build/
+coverage/
+
+# Expo / React Native
+.expo/
+.expo-shared/
+web-build/
+
+# IDE
+.vscode/
+.idea/
+
+

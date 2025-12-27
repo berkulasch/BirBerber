@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, ScrollView, Alert, ViewStyle, TextStyle, ImageStyle } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, ScrollView, Alert, ViewStyle, TextStyle, ImageStyle, Modal, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { theme } from '../theme';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -19,6 +19,8 @@ export const AppointmentScreen = () => {
   const [selectedService, setSelectedService] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
+  const [showQuestionModal, setShowQuestionModal] = useState(false);
+  const [customQuestion, setCustomQuestion] = useState('');
   
   // Generate dates based on available slots
   const availableDates = barber ? Object.keys(barber.availableSlots).sort() : [];
@@ -32,9 +34,12 @@ export const AppointmentScreen = () => {
     await scheduleBookingNotification(barber.name, selectedDate, selectedTime);
     
     const service = MOCK_SERVICES.find(s => s.id === selectedService);
+    const serviceName = service?.name || 'Custom Service Inquiry';
+    const questionText = customQuestion ? `\nQuestion: "${customQuestion}"` : '';
+    
     Alert.alert(
       'Request Sent',
-      `Your request has been sent to ${barber.name}.\nService: ${service?.name}\nDate: ${selectedDate}\nTime: ${selectedTime}\n\nYou will be notified when the barber accepts your request.`,
+      `Your request has been sent to ${barber.name}.\nService: ${serviceName}\nDate: ${selectedDate}\nTime: ${selectedTime}${questionText}\n\nYou will be notified when the barber accepts your request.`,
       [{ text: 'OK', onPress: () => navigation.goBack() }]
     );
   };
@@ -103,7 +108,10 @@ export const AppointmentScreen = () => {
               <TouchableOpacity
                 key={service.id}
                 style={[styles.serviceItem, isSelected && styles.serviceItemSelected]}
-                onPress={() => setSelectedService(service.id)}
+                onPress={() => {
+                  setSelectedService(service.id);
+                  setCustomQuestion('');
+                }}
               >
                 <View style={styles.serviceInfo}>
                   <Text style={[styles.serviceName, isSelected && styles.textSelected]}>{service.name}</Text>
@@ -113,6 +121,33 @@ export const AppointmentScreen = () => {
               </TouchableOpacity>
             );
           })}
+          
+          {/* Ask about other services option */}
+          <TouchableOpacity
+            style={[styles.serviceItem, styles.askServiceItem, selectedService === 'custom' && styles.serviceItemSelected]}
+            onPress={() => setShowQuestionModal(true)}
+          >
+            <View style={styles.serviceInfo}>
+              <View style={styles.askServiceHeader}>
+                <MaterialIcons 
+                  name="help-outline" 
+                  size={20} 
+                  color={selectedService === 'custom' ? theme.colors.background : theme.colors.primary} 
+                />
+                <Text style={[styles.serviceName, styles.askServiceName, selectedService === 'custom' && styles.textSelected]}>
+                  Ask About Other Services
+                </Text>
+              </View>
+              <Text style={[styles.serviceDuration, selectedService === 'custom' && styles.textSelected]}>
+                {customQuestion ? `"${customQuestion.substring(0, 30)}${customQuestion.length > 30 ? '...' : ''}"` : 'Service not on the list? Ask us!'}
+              </Text>
+            </View>
+            <MaterialIcons 
+              name="chevron-right" 
+              size={24} 
+              color={selectedService === 'custom' ? theme.colors.background : theme.colors.textSecondary} 
+            />
+          </TouchableOpacity>
         </View>
 
         <Text style={styles.sectionTitle}>Select Date</Text>
@@ -166,6 +201,62 @@ export const AppointmentScreen = () => {
           <Text style={styles.confirmButtonText}>REQUEST APPOINTMENT</Text>
         </TouchableOpacity>
       </View>
+
+      {/* Custom Question Modal */}
+      <Modal
+        visible={showQuestionModal}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setShowQuestionModal(false)}
+      >
+        <KeyboardAvoidingView 
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={styles.modalOverlay}
+        >
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Ask About a Service</Text>
+              <TouchableOpacity onPress={() => setShowQuestionModal(false)}>
+                <MaterialIcons name="close" size={24} color={theme.colors.text} />
+              </TouchableOpacity>
+            </View>
+            
+            <Text style={styles.modalSubtitle}>
+              Can't find the service you're looking for? Ask the barbershop if they offer it!
+            </Text>
+            
+            <TextInput
+              style={styles.questionInput}
+              placeholder="e.g., Do you make rasta? Do you do hair coloring?"
+              placeholderTextColor={theme.colors.textSecondary}
+              value={customQuestion}
+              onChangeText={setCustomQuestion}
+              multiline
+              numberOfLines={3}
+              textAlignVertical="top"
+            />
+            
+            <View style={styles.modalActions}>
+              <TouchableOpacity 
+                style={styles.modalCancelButton}
+                onPress={() => setShowQuestionModal(false)}
+              >
+                <Text style={styles.modalCancelText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={[styles.modalSubmitButton, !customQuestion.trim() && styles.modalSubmitButtonDisabled]}
+                disabled={!customQuestion.trim()}
+                onPress={() => {
+                  setSelectedService('custom');
+                  setShowQuestionModal(false);
+                }}
+              >
+                <Text style={styles.modalSubmitText}>Add Question</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </KeyboardAvoidingView>
+      </Modal>
     </SafeAreaView>
   );
 };
@@ -348,5 +439,90 @@ const styles = StyleSheet.create({
     ...theme.typography.button,
     color: theme.colors.background,
     letterSpacing: 1,
+  } as TextStyle,
+  askServiceItem: {
+    borderStyle: 'dashed',
+    borderColor: theme.colors.primary,
+    backgroundColor: 'transparent',
+  } as ViewStyle,
+  askServiceHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  } as ViewStyle,
+  askServiceName: {
+    color: theme.colors.primary,
+  } as TextStyle,
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    justifyContent: 'flex-end',
+  } as ViewStyle,
+  modalContent: {
+    backgroundColor: theme.colors.surface,
+    borderTopLeftRadius: theme.borderRadius.l,
+    borderTopRightRadius: theme.borderRadius.l,
+    padding: theme.spacing.l,
+    paddingBottom: theme.spacing.xl,
+  } as ViewStyle,
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: theme.spacing.m,
+  } as ViewStyle,
+  modalTitle: {
+    ...theme.typography.subheader,
+    fontSize: 20,
+    color: theme.colors.text,
+  } as TextStyle,
+  modalSubtitle: {
+    ...theme.typography.body,
+    color: theme.colors.textSecondary,
+    marginBottom: theme.spacing.l,
+    lineHeight: 22,
+  } as TextStyle,
+  questionInput: {
+    ...theme.typography.body,
+    backgroundColor: theme.colors.background,
+    borderRadius: theme.borderRadius.m,
+    padding: theme.spacing.m,
+    minHeight: 100,
+    color: theme.colors.text,
+    fontSize: 16,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+  } as TextStyle,
+  modalActions: {
+    flexDirection: 'row',
+    gap: theme.spacing.m,
+    marginTop: theme.spacing.l,
+  } as ViewStyle,
+  modalCancelButton: {
+    flex: 1,
+    paddingVertical: theme.spacing.m,
+    borderRadius: theme.borderRadius.m,
+    alignItems: 'center',
+    backgroundColor: theme.colors.background,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+  } as ViewStyle,
+  modalCancelText: {
+    ...theme.typography.button,
+    color: theme.colors.textSecondary,
+  } as TextStyle,
+  modalSubmitButton: {
+    flex: 1,
+    paddingVertical: theme.spacing.m,
+    borderRadius: theme.borderRadius.m,
+    alignItems: 'center',
+    backgroundColor: theme.colors.primary,
+  } as ViewStyle,
+  modalSubmitButtonDisabled: {
+    opacity: 0.5,
+  } as ViewStyle,
+  modalSubmitText: {
+    ...theme.typography.button,
+    color: theme.colors.background,
   } as TextStyle,
 });
